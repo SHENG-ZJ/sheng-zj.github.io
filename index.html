@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070c14">
+<meta name="description" content="Zijie Sheng — optical levitation, optical tweezers and coherent light–matter control.">
+<title>Zijie Sheng — Optical Trapping & Quantum Control</title>
+<style>
+:root{color-scheme:dark;--fg:#ecf5ff;--muted:#9cacc2;--line:rgba(177,214,255,.19)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}html,body{width:100%;min-height:100%;margin:0}body{overflow-x:hidden;background:#070c14;color:var(--fg);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+#scene{position:absolute;inset:0;width:100%;height:100%;z-index:0;touch-action:none;cursor:default}
+.scene-shade{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(7,12,20,.78) 0%,rgba(7,12,20,.37) 43%,rgba(7,12,20,.08) 100%)}
+.hero{position:relative;z-index:2;pointer-events:none;min-height:100svh;display:flex;align-items:center;padding:clamp(30px,9vw,145px)}
+.copy{max-width:730px;transform:translateY(10px)}.eyebrow{color:#98cadf;font-size:11px;text-transform:uppercase;font-weight:600;letter-spacing:.23em}
+.quantum-title{color:#a9dafa;text-shadow:0 0 26px rgba(109,174,225,.11)}
+h1{margin:19px 0 22px;font-size:clamp(43px,6.6vw,100px);font-weight:470;line-height:1.09;letter-spacing:-.06em}
+.hero-name{margin:0 0 5px;font-size:clamp(23px,2.55vw,35px);font-weight:480;letter-spacing:-.025em;color:#c5b5e2;line-height:1.35}
+.intro{max-width:570px;margin:0;font-size:clamp(15px,1.65vw,20px);color:#c2d0df;font-weight:350;line-height:1.8}
+.note{position:absolute;bottom:19px;left:50%;transform:translateX(-50%);z-index:3;width:max-content;max-width:calc(100vw - 40px);margin:0;color:#8ca0b5;font-size:11px;letter-spacing:.035em;text-align:center;pointer-events:none}
+.controls{position:absolute;top:auto;bottom:44px;right:22px;z-index:4;width:min(308px,calc(100vw - 32px));padding:18px 20px 15px;background:rgba(12,20,33,.77);border:1px solid var(--line);border-radius:16px;box-shadow:0 15px 50px rgba(0,0,0,.15);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.controls-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;color:#cfdfef;font-size:11px;letter-spacing:.18em;text-transform:uppercase}.state{letter-spacing:.06em;color:#90bed4}
+.control{display:grid;grid-template-columns:25px minmax(0,1fr) 42px;gap:12px;align-items:center;margin:0 0 16px}.control-icon{display:flex;align-items:center;justify-content:center;color:#a9d8ed}.control-icon svg{width:21px;height:21px}.control output{font-size:11px;text-align:right;color:#e6f2ff;font-variant-numeric:tabular-nums}
+input[type=range]{appearance:none;-webkit-appearance:none;width:100%;height:3px;display:block;margin:12px 0;background:linear-gradient(to right,#83c5e2,#47576a);border-radius:8px;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;border:2px solid #b6e9ff;background:#15293a;border-radius:50%}
+input[type=range]::-moz-range-thumb{width:10px;height:10px;border:2px solid #b6e9ff;background:#15293a;border-radius:50%}
+
+@media(max-width:700px){.hero{align-items:flex-end;padding:28px 26px 90px;min-height:100svh}.copy{transform:none}h1{font-size:clamp(40px,10vw,68px)}.intro{font-size:15px}.controls{top:auto;bottom:42px;right:12px;width:min(270px,calc(100vw - 24px));padding:13px 15px}.control{margin-bottom:7px}.note{font-size:9px;bottom:12px;white-space:normal}}
+@media(prefers-reduced-motion:reduce){.scene-shade{background:linear-gradient(90deg,rgba(7,12,20,.82),rgba(7,12,20,.27))}}
+
+/* Scroll-driven optical scene, aligned with the first screen. */
+.journey{height:650svh;position:relative}.first-page{height:100svh;min-height:0;position:sticky;top:0;isolation:isolate;overflow:hidden}
+.hero,.controls,.note{transition:opacity .12s linear;will-change:opacity}
+.scene-shade{background:linear-gradient(90deg,rgba(7,12,20,.78),rgba(7,12,20,.32) 48%,rgba(7,12,20,.06))}
+.lab-layer{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;will-change:opacity}
+#labCanvas{display:block;width:100%;height:100%}
+.lab-info{position:absolute;left:calc(50% - min(37vw, 560px));top:50%;transform:translateY(-48%);width:min(43vw,570px);max-height:none;overflow:visible;opacity:0;padding:10px 12px 12px 0;scrollbar-width:none;pointer-events:none}
+.lab-title{font-size:clamp(35px,5.2vw,75px);font-weight:470;letter-spacing:-.057em;line-height:1.07;margin:0 0 15px;color:#ecf5ff}
+.lab-title.blue{color:#a9dafa;margin-top:27px}.lab-title.rose{color:#c5b5e2;margin-top:24px}.section-rule{height:1px;width:75%;background:linear-gradient(90deg,rgba(169,218,250,.27),transparent);margin:8px 0 13px}
+.interests{margin:0 0 17px;font-size:clamp(17px,1.6vw,22px);color:#c2d0df;line-height:1.8;font-weight:350}
+.school-row{display:flex;align-items:center;gap:12px;margin:0 0 12px;min-height:49px}
+.uni-logo{width:112px;height:40px;object-fit:contain;object-position:left center;filter:brightness(0) invert(1);opacity:.86}
+.school-name{color:#d8eaf6;font-size:clamp(18px,1.7vw,23px);font-weight:450;letter-spacing:-.025em}
+.cv-lines{display:grid;gap:7px}.institution-title{color:#d8eaf6;font-size:clamp(18px,1.7vw,23px);font-weight:450;letter-spacing:-.025em;margin:9px 0 4px;line-height:1.25}.institution-title.porsche{margin-top:13px}.experience-lines .cv-line{line-height:1.4}.experience-lines .cv-line span{max-width:100%}
+.cv-line{display:flex;gap:14px;align-items:baseline;font-size:clamp(16px,1.35vw,19px);color:#c6d8e7;line-height:1.5}
+.cv-line time{min-width:102px;color:#98b8d1;white-space:nowrap;font-size:clamp(15px,1.17vw,17px)}
+.cv-group{display:flex;align-items:flex-start;gap:13px;margin-top:16px}
+.cv-mark{height:36px;width:39px;flex:0 0 39px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(169,218,250,.28);border-radius:8px;color:#b9d9ed;font-size:10px;font-weight:700;letter-spacing:-.02em}
+.cv-mark.porsche{width:69px;flex-basis:69px;letter-spacing:.08em;font-size:9px}
+.cv-group .cv-lines{flex:1;min-width:0}
+@media(max-width:800px){.lab-info{left:20px;top:auto;bottom:24px;transform:none;width:calc(100% - 40px);max-height:none;padding:13px 15px;background:linear-gradient(90deg,rgba(7,12,20,.95),rgba(7,12,20,.68));border-radius:12px}.lab-title{font-size:clamp(31px,7.2vw,50px);margin-bottom:9px}.lab-title.blue{margin-top:17px}.lab-title.rose{margin-top:17px}.interests{font-size:13px;line-height:1.5}.school-row{margin-bottom:7px}.cv-line{font-size:12px;gap:9px}.cv-line time{min-width:77px}.cv-group{margin-top:10px}}
+@media(max-height:690px) and (min-width:801px){.lab-title{font-size:clamp(29px,4.2vw,55px)}.lab-title.blue{margin-top:16px}.lab-title.rose{margin-top:16px}.interests{font-size:14px;line-height:1.5}.cv-group{margin-top:9px}.cv-lines{gap:3px}}
+
+/* Responsive single-viewport information stack and progressive disclosure */
+.reveal-section{opacity:0;transform:translateY(11px);transition:opacity .15s linear,transform .15s linear;will-change:opacity,transform}
+/* Readability and consistent research information alignment */
+.cv-line time{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-weight:500;letter-spacing:-.02em;color:#b4cce0}
+.cv-line span{font-weight:390}
+.contact-section{margin:25px 0 6px}
+.lab-title.contact-title{font-size:clamp(35px,5.2vw,75px);color:#efaacb;margin:0 0 8px}
+.contact-email{pointer-events:auto;display:inline-block;font-size:clamp(17px,1.65vw,23px);color:#e0cbdc;text-decoration:none;border-bottom:1px solid rgba(239,170,203,.32);overflow-wrap:anywhere}
+.contact-email:hover{color:#fff;border-color:#efaacb}
+@media(max-width:800px){.lab-info{left:20px;width:calc(100% - 40px)}.cv-line{font-size:14px}.cv-line time{font-size:12px;min-width:82px}.contact-email{font-size:15px}.lab-title.contact-title{font-size:clamp(31px,7.2vw,50px)}}
+
+/* Optical process annotation, set in a distinct editorial serif. */
+.lab-explanation{position:absolute;top:clamp(24px,8vh,90px);left:50%;right:auto;width:min(43vw,590px);transform:translateX(-50%);margin:0;color:#d8d0dc;font:italic 400 clamp(17px,1.55vw,23px)/1.48 Georgia,"Times New Roman",serif;letter-spacing:.004em;text-align:center;text-wrap:balance;opacity:0;pointer-events:none;text-shadow:0 1px 20px rgba(7,12,20,.9)}
+@media(max-width:800px){.lab-explanation{top:clamp(10px,3vh,32px);right:auto;width:55vw;font-size:clamp(12px,1.9vw,17px)}}
+.quality-slider .quality-endpoints{display:flex;justify-content:space-between;gap:12px;color:#b6c8d9;font-size:11px;line-height:1.2}.quality-slider .quality-endpoints small{font-size:inherit}.quality-slider input{grid-column:1/-1}
+/* Interactive optical laboratory — placed beneath the cavity illustration. */
+.phd-topics{margin:-3px 0 5px 116px;color:#a9c6de;font-size:clamp(12px,1.08vw,15px);line-height:1.37;max-width:420px}
+.lab-controls{position:absolute;z-index:5;pointer-events:auto;right:clamp(25px,5vw,80px);bottom:clamp(16px,4vh,42px);width:min(43vw,590px);padding:13px 17px 12px;background:rgba(8,16,28,.79);border:1px solid rgba(162,197,223,.19);border-radius:15px;backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);opacity:0;transition:opacity .2s}
+.lab-controls h3{margin:0 0 7px;font-weight:500;font-size:13px;letter-spacing:.035em;color:#c6deed}
+.lab-sliders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:23px;row-gap:5px}
+.lab-slider{min-width:0;display:grid;grid-template-columns:1fr auto;column-gap:8px;align-items:center}
+.lab-slider span{font-size:12px;color:#bcd1e1}.lab-slider output{font-size:12px;color:#e4efff;font-variant-numeric:tabular-nums}
+.lab-slider input{grid-column:1/-1;margin:6px 0 9px;width:100%;accent-color:#bd819d}
+.coupling-row{display:flex;align-items:center;gap:12px;margin-top:4px;color:#c1d6e5;font-size:12px}
+.coupling-track{height:6px;flex:1;overflow:hidden;border-radius:20px;background:rgba(126,155,183,.24)}
+.coupling-fill{height:100%;width:100%;background:linear-gradient(90deg,#945c74,#a9dafa);border-radius:inherit;transition:width .1s}
+.coupling-row output{min-width:46px;text-align:right;color:#daebf7;font-variant-numeric:tabular-nums}
+@media(max-width:800px){.lab-controls{right:12px;bottom:12px;width:min(55vw,400px);padding:10px 12px}.lab-sliders{grid-template-columns:1fr 1fr;column-gap:10px}.lab-slider span,.lab-slider output,.coupling-row{font-size:10px}.lab-controls h3{font-size:11px}.phd-topics{margin-left:91px;font-size:11px}}
+@media(max-width:540px){.lab-controls{right:8px;bottom:8px;width:56vw;padding:8px 9px}.lab-sliders{grid-template-columns:1fr;row-gap:0}.lab-slider input{margin:2px 0 3px}.lab-controls h3{margin-bottom:3px}.coupling-row{gap:5px}.phd-topics{margin-left:91px;font-size:10px}}
+.third-overlay{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0}
+.third-quote{position:absolute;left:50%;top:61%;transform:translateX(-50%);width:min(1160px,calc(100vw - 72px));text-align:center}
+.third-quote .line{margin:0;font-size:clamp(36px,5.6vw,82px);font-weight:470;line-height:1.16;letter-spacing:-.055em;text-wrap:balance}
+.third-quote .line.blue{color:#a9dafa;text-shadow:0 0 26px rgba(109,174,225,.11)}
+.third-footer{position:absolute;left:50%;bottom:clamp(21px,4.2vh,44px);transform:translateX(-50%);display:flex;align-items:center;gap:17px;color:#c4d5e5;font-size:clamp(20px,1.65vw,24px);font-weight:480;letter-spacing:.012em;white-space:nowrap}
+.third-footer > span:first-child{color:#c5b5e2}
+.third-footer .footer-separator{width:1px;height:20px;background:rgba(170,210,234,.28)}
+.third-mail{display:inline-flex;align-items:center;gap:0;color:#a9dafa;text-decoration:none;pointer-events:auto;outline-offset:5px}
+.third-mail svg{width:22px;height:22px;flex:none;transition:color .22s,filter .22s,transform .22s}
+.third-mail:hover svg,.third-mail:focus-visible svg{color:#f0faff;filter:drop-shadow(0 0 7px rgba(169,218,250,.8));transform:translateY(-1px)}
+.third-mail-address{display:inline-block;max-width:0;overflow:hidden;white-space:nowrap;opacity:0;font-size:clamp(12px,1.13vw,16px);font-weight:400;letter-spacing:0;color:#d9e9f6;transition:max-width .32s ease,opacity .23s ease,margin-left .32s ease;margin-left:0}
+.third-mail:hover .third-mail-address,.third-mail:focus-visible .third-mail-address{max-width:270px;opacity:1;margin-left:10px}
+@media(max-width:800px){.third-quote{top:60%;width:calc(100vw - 34px)}.third-quote .line{font-size:clamp(29px,6.6vw,58px);line-height:1.18}.third-footer{bottom:18px;font-size:20px;gap:12px}.third-mail svg{width:21px;height:21px}}
+@media(max-width:520px){.third-footer{font-size:18px;gap:10px}.third-mail-address{font-size:11px}.third-mail:hover .third-mail-address,.third-mail:focus-visible .third-mail-address{max-width:208px;margin-left:6px}}
+@media(max-height:610px){.third-quote{top:58%}.third-quote .line{font-size:clamp(27px,5vh,52px)}.third-footer{bottom:10px}}
+</style>
+</head>
+<body>
+<main class="journey" id="journey"><div class="first-page" id="home"><canvas id="scene" aria-label="Interactive optical levitation particle simulation"></canvas>
+<div class="scene-shade"></div>
+<header class="hero"><div class="copy">
+<div class="eyebrow">Levitation · Vacuum · Quantum</div>
+<h1>Optical trapping.<br><span class="quantum-title">Quantum control.</span></h1>
+<p class="hero-name">Zijie Sheng</p>
+<p class="intro">I study light–matter interactions with optical tweezers and cavities.</p>
+
+</div></header>
+<p class="note">Move to stir the field · Right-click for optical tweezer array · Left-drag to move a trapped particle</p>
+<aside class="controls" aria-label="Simulation controls">
+<div class="controls-header"><span>Optical field / controls</span></div>
+<label class="control" title="Particle count"><span class="control-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2"/><circle cx="16" cy="7" r="2"/><circle cx="12" cy="16" r="2"/></svg></span><input aria-label="Particle count" id="count" type="range" min="20" max="300" step="10" value="80"><output id="countOut" aria-label="Particle count value">80</output></label>
+<label class="control" title="Repulsion"><span class="control-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M8 8 5 5m0 0h4m-4 0v4M16 8l3-3m0 0h-4m4 0v4M8 16l-3 3m0 0h4m-4 0v-4M16 16l3 3m0 0h-4m4 0v-4"/></svg></span><input aria-label="Repulsion" id="repulsion" type="range" min="0" max="200" step="5" value="140"><output id="repulsionOut" aria-label="Repulsion value">140</output></label>
+<label class="control" title="Mouse attraction"><span class="control-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v7m0 0-3-3m3 3 3-3M3 12h7m0 0-3-3m3 3-3 3m11-3h-7m0 0 3-3m-3 3 3 3M12 21v-7m0 0-3 3m3-3 3 3"/></svg></span><input aria-label="Mouse attraction" id="attraction" type="range" min="0" max="4" step="0.05" value="1.8"><output id="attractionOut" aria-label="Mouse attraction value">1.8</output></label>
+<label class="control" title="Trapping depth"><span class="control-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5v14h18"/><path d="M5 7 Q12 27 19 7"/><circle cx="12" cy="15.3" r="2.1" fill="currentColor" stroke="none"/></svg></span><input aria-label="Trapping depth" id="depth" type="range" min="0" max="40" step="1" value="25"><output id="depthOut" aria-label="Trapping depth value">25</output></label>
+
+</aside>
+<div class="lab-layer" id="labLayer" aria-label="Scroll-controlled optical tweezer and Fabry–Pérot cavity illustration">
+ <canvas id="labCanvas" aria-label="Photons in a vertical optical tweezer scatter into a two-mirror cavity"></canvas>
+ <p class="lab-explanation">A trapped object coherently couples tweezer light into the cavity, boosting light–matter interaction.</p>
+ <div class="lab-info" id="labInfo">
+   <div class="reveal-section" data-stage="0"><h2 class="lab-title">Research interests<span style="color:#a9dafa">.</span></h2>
+   <p class="interests">Quantum optics · Levitated optomechanics<br>Optical cavities · Non-Hermitian physics</p>
+   </div><div class="reveal-section" data-stage="1"><h2 class="lab-title blue">Education.</h2>
+   <p class="school-name">University of Stuttgart</p>
+   <div class="section-rule"></div>
+   <div class="cv-lines">
+     <div class="cv-line"><time>2023–2027</time><span>PhD · Physics</span></div>
+       <div class="cv-line"><time>2021–2023</time><span>MSc · Physics</span></div>
+     <div class="cv-line"><time>2017–2021</time><span>BSc · Materials Science</span></div>
+   </div>
+   </div><div class="reveal-section" data-stage="2"><h2 class="lab-title rose">Experience.</h2>
+   <p class="institution-title">University of Stuttgart</p>
+   <div class="section-rule"></div>
+   <div class="cv-lines experience-lines">
+     <div class="cv-line"><time>2021–2023</time><span>Research Assistant · Micro-ion-trap design and modelling</span></div>
+     <div class="cv-line"><time>2018–2020</time><span>Teaching Assistant · Mathematics, physics and laboratory courses</span></div>
+   </div>
+   <p class="institution-title porsche">Porsche AG</p>
+   <div class="section-rule"></div>
+   <div class="cv-lines experience-lines">
+     <div class="cv-line"><time>2021</time><span>Engineering Intern · Industrial quality inspection</span></div>
+   </div>
+   </div></div>
+ <div class="lab-controls" id="labControls" aria-label="Optical experiment controls">
+   <div class="lab-sliders">
+     <label class="lab-slider"><span>Numerical aperture (NA)</span><output id="naOut">0.68</output><input id="labNA" type="range" min="0.2" max="0.95" value="0.68" step="0.01" aria-label="Optical tweezer numerical aperture"></label>
+     <label class="lab-slider"><span>Wavelength</span><output id="wlOut">455 nm</output><input id="labWL" type="range" min="430" max="700" value="455" step="5" aria-label="Wavelength in nanometres"></label>
+     <label class="lab-slider"><span>Laser power</span><output id="powerOut">50%</output><input id="labPower" type="range" min="0" max="100" value="50" step="1" aria-label="Laser power"></label>
+     <label class="lab-slider"><span>Cavity position</span><output id="positionOut">0</output><input id="labPosition" type="range" min="-100" max="100" value="0" step="1" aria-label="Cavity horizontal position"></label>
+     <label class="lab-slider quality-slider"><span>Cavity quality factor</span><span class="quality-endpoints"><small>Weak</small><small>Strong</small></span><input id="labQuality" type="range" min="0" max="100" value="38" step="1" aria-label="Cavity quality factor, weak to strong"></label>
+   </div>
+   <div class="coupling-row"><span>Coupling</span><div class="coupling-track" role="progressbar" aria-label="Cavity coupling efficiency" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="couplingBar"><div class="coupling-fill" id="couplingFill"></div></div><output id="couplingOut">100%</output></div>
+ </div>
+</div>
+<div class="third-overlay" id="thirdOverlay">
+  <div class="third-quote">
+    <p class="line">From controlling one small object</p>
+    <p class="line blue">to exploring the wide unknown.</p>
+  </div>
+  <div class="third-footer"><span>Zijie Sheng</span><span class="footer-separator" aria-hidden="true"></span><a class="third-mail" href="mailto:shengzijie001@gmail.com" aria-label="Email Zijie Sheng at shengzijie001@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span class="third-mail-address">shengzijie001@gmail.com</span></a></div>
+</div>
+
+</div></main>
+<script>
+(()=>{'use strict';
+const c=document.getElementById('scene'),ctx=c.getContext('2d',{alpha:true});if(!ctx)return;
+const C={max:80,repulsion:140,cohesion:.42,attraction:1.8,depth:25,alignment:.65,mouseSwirl:.60,drag:.85,noise:68,speedMax:90,accMax:390,neighbor:67,sepRadius:27,mouseRadius:235};
+const RADIUS=6; // identical, flat 2D particles; hard core excludes overlap
+const mouse={x:-1000,y:-1000,vx:0,vy:0,moved:-1e10,inside:false};
+let W=innerWidth,H=innerHeight,DPR=1,particles=[],ghosts=[],mode='free',sites=[],cols=0,rows=0,spacing=48,gridX=0,gridY=0,prev=null,spawnCredit=0,dragging=null,pointerLast=null,tweezerPointer=null;
+const rnd=(a,b)=>a+Math.random()*(b-a),clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+// Minimal 2D ring-and-dot symbol, identical physical diameter for every particle.
+function drawSphere(p,alpha=1){if(alpha<=0)return;ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle='#a9ddfa';ctx.fillStyle='rgba(172,225,255,.28)';ctx.lineWidth=1.25;ctx.beginPath();ctx.arc(p.x,p.y,RADIUS,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.beginPath();ctx.arc(p.x,p.y,1.5,0,Math.PI*2);ctx.fillStyle='#d8f1ff';ctx.fill();ctx.restore();}
+// Reject new positions that overlap active particles or fade-outs.
+function randomFreePosition(x,y){for(let attempt=0;attempt<45;attempt++){const px=x===undefined?rnd(RADIUS,W-RADIUS):clamp(x+rnd(-55,55),RADIUS,W-RADIUS),py=y===undefined?rnd(RADIUS,H-RADIUS):clamp(y+rnd(-55,55),RADIUS,H-RADIUS);if(particles.every(q=>(q.x-px)**2+(q.y-py)**2>=(2*RADIUS+1)**2)&&ghosts.every(q=>(q.x-px)**2+(q.y-py)**2>=(2*RADIUS+1)**2))return {x:px,y:py};}return null;}
+// Position-based hard-disk contact solver (not merely a soft repulsive force).
+function resolveContacts(){const min=2*RADIUS+1,min2=min*min;for(let pass=0;pass<3;pass++){for(let i=0;i<particles.length;i++){const a=particles[i];for(let j=i+1;j<particles.length;j++){const b=particles[j];let dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy;if(d2>=min2)continue;let d=Math.sqrt(d2);if(d<1e-5){const angle=(i*2.399963+j*.618)%6.283185;dx=Math.cos(angle);dy=Math.sin(angle);d=1;}const overlap=(min-d)/2,nx=dx/d,ny=dy/d;a.x-=nx*overlap;a.y-=ny*overlap;b.x+=nx*overlap;b.y+=ny*overlap;const vn=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(vn<0){const impulse=vn*.42;a.vx+=nx*impulse;a.vy+=ny*impulse;b.vx-=nx*impulse;b.vy-=ny*impulse;}}}}}
+function resize(){W=innerWidth;H=document.querySelector('.first-page').clientHeight;DPR=Math.min(devicePixelRatio||1,2);c.width=Math.round(W*DPR);c.height=Math.round(H*DPR);c.style.width=W+'px';c.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0);if(mode==='array')makeGrid();}
+function newP(x=rnd(0,W),y=rnd(0,H)){const t=rnd(0,Math.PI*2),speed=rnd(9,38);return {x,y,vx:Math.cos(t)*speed,vy:Math.sin(t)*speed,r:RADIUS,age:0,life:rnd(9,21),phase:rnd(0,7),site:-1,dying:false,focus:0};}
+function fadeOut(p){if(p.dying)return;p.dying=true;p.fade=0;p.fx=p.x;p.fy=p.y;ghosts.push(p);}
+function modifyPopulation(){const target=mode==='array'?Math.min(C.max,sites.length):C.max;
+if(mode==='free'){while(particles.length<target){const pos=randomFreePosition();if(!pos)break;particles.push(newP(pos.x,pos.y));}while(particles.length>target)fadeOut(particles.pop());}
+else{while(particles.length>target){let p=particles.pop();if(p.site>=0)sites[p.site].taken=null;fadeOut(p);}while(particles.length<target){const vacancies=sites.filter(s=>s.taken===null);if(!vacancies.length)break;const s=vacancies[Math.floor(Math.random()*vacancies.length)];let p=newP(s.x,s.y);p.site=s.id;p.vx=0;p.vy=0;p.life=1e9;s.taken=p;particles.push(p);}}}
+function makeGrid(){// Site density adapts to screen size while preserving room for drag gestures.
+spacing=clamp(Math.sqrt(W*H/Math.max(C.max*1.55,70)),34,65);cols=Math.max(2,Math.floor((W-32)/spacing));rows=Math.max(2,Math.floor((H-40)/spacing));gridX=(W-(cols-1)*spacing)/2;gridY=(H-(rows-1)*spacing)/2;
+sites=Array.from({length:cols*rows},(_,id)=>({id,x:gridX+(id%cols)*spacing,y:gridY+Math.floor(id/cols)*spacing,taken:null}));
+if(mode==='array'){const old=[...particles];particles=[];for(const p of old){const available=sites.filter(s=>s.taken===null);if(!available.length){fadeOut(p);continue;}let nearest=null,d=Infinity;for(const s of available){const dd=(p.x-s.x)**2+(p.y-s.y)**2;if(dd<d){d=dd;nearest=s;}}p.site=nearest.id;nearest.taken=p;p.life=1e9;p.age=0;particles.push(p);}modifyPopulation();}}
+function toggleArray(){if(dragging)finishDrag();mode=mode==='free'?'array':'free';c.style.cursor=mode==='array'?'crosshair':'default';document.documentElement.dataset.arrayMode=mode==='array'?'true':'false';if(mode==='array'){makeGrid();}else{sites=[];for(let p of particles){p.site=-1;p.age=0;p.life=rnd(10,22);}modifyPopulation();}}
+function updatePointer(e){const t=performance.now()/1000;if(pointerLast!==null){const dt=clamp(t-pointerLast,.012,.12);mouse.vx=clamp((e.clientX-mouse.x)/dt,-950,950);mouse.vy=clamp((e.clientY-mouse.y)/dt,-950,950);}mouse.x=e.clientX;mouse.y=e.clientY;mouse.inside=true;mouse.moved=t;pointerLast=t;}
+window.addEventListener('pointermove',e=>{
+ updatePointer(e);
+ if(window.scrollY>window.innerHeight*.65)return;
+ if(dragging&&e.pointerId===dragging.pointer){
+  // While held, a selected particle follows the optical tweezer anywhere on screen.
+  // Capture/escape is decided at release, not limited by distance to the original site.
+  const p=dragging.p;
+  p.x=clamp(mouse.x,RADIUS,W-RADIUS);
+  p.y=clamp(mouse.y,RADIUS,H-RADIUS);
+  p.vx=0;p.vy=0;
+  dragging.travel=Math.max(dragging.travel,Math.hypot(p.x-sites[dragging.origin].x,p.y-sites[dragging.origin].y));
+ }
+},{passive:true});
+window.addEventListener('pointerdown',e=>{if(window.scrollY>window.innerHeight*.65)return;if(e.button!==0)return;updatePointer(e);if(mode==='array'){tweezerPointer=e.pointerId;let best=null,dist=16;for(const p of particles){const d=Math.hypot(p.x-e.clientX,p.y-e.clientY);if(d<dist){dist=d;best=p;}}if(best){dragging={p:best,origin:best.site,pointer:e.pointerId,travel:0};c.setPointerCapture(e.pointerId);e.preventDefault();}}
+else{for(let i=0;i<18&&particles.length<C.max;i++){const pos=randomFreePosition(mouse.x,mouse.y);if(!pos)break;particles.push(newP(pos.x,pos.y));}} });
+function finishDrag(){
+ if(!dragging)return;
+ const {p,origin}=dragging;
+ dragging=null;
+ const from=sites[origin];
+ if(!from||!particles.includes(p))return;
+ // All unoccupied array sites are candidates, including the original site.
+ // Capture is based on RELEASE position; no nearest-neighbor hopping restriction.
+ const available=sites.filter(s=>s.taken===null||s.id===origin);
+ let target=null,best=Infinity;
+ for(const site of available){
+  const dist=Math.hypot(p.x-site.x,p.y-site.y);
+  if(dist<best){best=dist;target=site;}
+ }
+ const D=C.depth/40;
+ // Higher trapping depth gives a wider capture basin. Low depth releases
+ // outside a small basin become loss events (constant-size fade-out).
+ const captureRadius=spacing*(.20+.34*D);
+ from.taken=null;
+ if(target&&best<=captureRadius){
+  target.taken=p;p.site=target.id;
+  // Begin damped return to the new tweezer center from the release location.
+  p.vx=p.vy=0;p.age=Math.max(p.age,.65);
+ }else{
+  particles=particles.filter(q=>q!==p);
+  fadeOut(p);
+ }
+}
+window.addEventListener('pointerup',e=>{if(dragging&&e.pointerId===dragging.pointer)finishDrag();if(e.pointerId===tweezerPointer)tweezerPointer=null;});window.addEventListener('pointercancel',()=>{finishDrag();tweezerPointer=null;});
+c.addEventListener('contextmenu',e=>{e.preventDefault();toggleArray();});
+window.addEventListener('pointerleave',()=>{mouse.inside=false;});window.addEventListener('resize',resize,{passive:true});
+for(const [id,key] of [['count','max'],['repulsion','repulsion'],['attraction','attraction'],['depth','depth']]){const el=document.getElementById(id),out=document.getElementById(id+'Out');el.addEventListener('input',()=>{C[key]=Number(el.value);out.textContent=el.value;if(key==='max'){if(mode==='array')makeGrid();else modifyPopulation();}});}
+function freeStep(dt,time){const active=window.scrollY<window.innerHeight*.65&&mouse.inside&&time-mouse.moved<.55;const speed=Math.hypot(mouse.vx,mouse.vy);const rate=9+(active?Math.min(speed/650,1)*75:0);spawnCredit+=rate*dt;
+while(spawnCredit>=1&&particles.length<C.max){spawnCredit--;const pos=active?randomFreePosition(mouse.x,mouse.y):randomFreePosition();if(pos)particles.push(newP(pos.x,pos.y));}spawnCredit=Math.min(spawnCredit,2);
+const old=particles.map(p=>({x:p.x,y:p.y,vx:p.vx,vy:p.vy})),out=[];for(let i=0;i<particles.length;i++){const p=particles[i],s=old[i];let n=0,sx=0,sy=0,svx=0,svy=0,rx=0,ry=0;
+for(let j=0;j<old.length;j++){if(i===j)continue;const q=old[j],dx=q.x-s.x,dy=q.y-s.y,d2=dx*dx+dy*dy;if(d2>C.neighbor*C.neighbor)continue;n++;sx+=q.x;sy+=q.y;svx+=q.vx;svy+=q.vy;if(d2<C.sepRadius*C.sepRadius){const d=Math.sqrt(d2+4),mag=Math.max(0,1-d/C.sepRadius);rx-=dx/d*mag;ry-=dy/d*mag;}}
+let ax=-C.drag*s.vx,ay=-C.drag*s.vy;if(n){ax+=C.repulsion*rx+C.alignment*(svx/n-s.vx)+(.16*C.cohesion)*(sx/n-s.x);ay+=C.repulsion*ry+C.alignment*(svy/n-s.vy)+(.16*C.cohesion)*(sy/n-s.y);}
+if(active){const dx=mouse.x-s.x,dy=mouse.y-s.y,w=Math.exp(-(dx*dx+dy*dy)/(2*C.mouseRadius**2));ax+=w*(C.attraction*dx-C.mouseSwirl*dy);ay+=w*(C.attraction*dy+C.mouseSwirl*dx);}
+const a=Math.hypot(ax,ay);if(a>C.accMax){ax*=C.accMax/a;ay*=C.accMax/a;}// Brownian-like stochastic velocity kicks scale as sqrt(dt), not dt.
+// Independent forcing persists even without nearby particles or mouse motion.
+p.vx+=ax*dt+C.noise*Math.sqrt(dt)*rnd(-1,1);
+p.vy+=ay*dt+C.noise*Math.sqrt(dt)*rnd(-1,1);
+const v=Math.hypot(p.vx,p.vy);if(v>C.speedMax){p.vx*=C.speedMax/v;p.vy*=C.speedMax/v;}p.x+=p.vx*dt;p.y+=p.vy*dt;p.age+=dt;
+if(p.age>=p.life){fadeOut(p);continue;}if(p.x<-25)p.x=W+25;if(p.x>W+25)p.x=-25;if(p.y<-25)p.y=H+25;if(p.y>H+25)p.y=-25;out.push(p);}particles=out;resolveContacts();}
+function arrayStep(dt,time){
+const survivors=[];
+for(const p of particles){
+ if(dragging&&p===dragging.p){survivors.push(p);continue;}
+ const site=sites[p.site];if(!site)continue;
+ // Increasing depth deepens the effective confinement and weakens mouse-induced displacement.
+ // At low depth a nearby, moving cursor can pull a particle over the trap's escape radius.
+ const D=C.depth/40;
+ const stiffness=7+155*D*D;
+ const damping=5+8*D;
+ let ax=-stiffness*(p.x-site.x)-damping*p.vx+rnd(-55,55);
+ let ay=-stiffness*(p.y-site.y)-damping*p.vy+rnd(-55,55);
+ if(mouse.inside&&time-mouse.moved<.42){
+   const mx=mouse.x-p.x,my=mouse.y-p.y;
+   const w=Math.exp(-(mx*mx+my*my)/(2*(spacing*1.10)**2));
+   const coupling=C.attraction*14*Math.pow(1-D,2.6);
+   // A moving optical spot drags particles via a finite-range, overdamped-like force.
+   ax+=w*coupling*(mx+.065*mouse.vx);
+   ay+=w*coupling*(my+.065*mouse.vy);
+ }
+ const a=Math.hypot(ax,ay),lim=2800;
+ if(a>lim){ax*=lim/a;ay*=lim/a;}
+ p.vx=clamp(p.vx+ax*dt,-400,400);
+ p.vy=clamp(p.vy+ay*dt,-400,400);
+ p.x+=p.vx*dt;p.y+=p.vy*dt;p.age+=dt;
+ const displacement=Math.hypot(p.x-site.x,p.y-site.y);
+ const escapeRadius=spacing*(.47+.12*D);
+ if(displacement>escapeRadius){
+   // Loss of confinement: vacate the site and fade out at constant particle radius.
+   site.taken=null;fadeOut(p);continue;
+ }
+ survivors.push(p);
+}
+particles=survivors;resolveContacts();
+}
+// Mouse-held optical tweezer focal spot: 2D Gaussian light halo plus diffraction-like rings.
+function drawTweezerSpot(time){
+ if(mode!=='array'||tweezerPointer===null||!mouse.inside)return;
+ const x=mouse.x,y=mouse.y,r=36;
+ ctx.save();
+ const g=ctx.createRadialGradient(x,y,0,x,y,r);
+ g.addColorStop(0,'rgba(164,38,46,.34)');
+ g.addColorStop(.13,'rgba(135,32,42,.23)');
+ g.addColorStop(.38,'rgba(110,22,35,.09)');
+ g.addColorStop(1,'rgba(110,22,35,0)');
+ ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='rgba(197,75,82,.52)';ctx.lineWidth=.9;
+ ctx.beginPath();ctx.arc(x,y,12,0,Math.PI*2);ctx.stroke();
+ ctx.strokeStyle='rgba(150,43,56,.30)';ctx.beginPath();ctx.arc(x,y,23,0,Math.PI*2);ctx.stroke();
+ ctx.strokeStyle='rgba(225,90,94,.65)';ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.stroke();
+ ctx.restore();
+}
+function drawArrayGrid(){
+ // Draw only in array mode: understated Cartesian lines connecting trap sites.
+ // Occupied endpoints softly illuminate their adjacent horizontal/vertical edges.
+ ctx.save();ctx.lineCap='round';
+ for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){
+  const a=sites[row*cols+col];
+  if(col+1<cols){
+   const b=sites[row*cols+col+1],filled=(a.taken?1:0)+(b.taken?1:0);
+   ctx.strokeStyle=filled===2?'rgba(127,195,232,.115)':filled===1?'rgba(127,195,232,.074)':'rgba(127,195,232,.037)';
+   ctx.lineWidth=filled===2?.85:.65;
+   ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+  }
+  if(row+1<rows){
+   const b=sites[(row+1)*cols+col],filled=(a.taken?1:0)+(b.taken?1:0);
+   ctx.strokeStyle=filled===2?'rgba(127,195,232,.115)':filled===1?'rgba(127,195,232,.074)':'rgba(127,195,232,.037)';
+   ctx.lineWidth=filled===2?.85:.65;
+   ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+  }
+ }
+ ctx.restore();
+}
+function render(dt,time){ctx.clearRect(0,0,W,H);if(mode==='array')drawArrayGrid();
+for(const p of particles){const fade=mode==='array'?Math.min(1,p.age/.65):Math.min(1,p.age/.45,Math.max(0,(p.life-p.age)/2.1));drawSphere(p,Math.max(0,fade)*.89);}
+const alive=[];for(const p of ghosts){p.fade+=dt;const progress=p.fade/1.0;if(progress>=1)continue;p.x=p.fx;p.y=p.fy;drawSphere(p,(1-progress)**1.9);alive.push(p);}ghosts=alive;drawTweezerSpot(time);}
+function frame(ts){const now=ts/1000,dt=prev===null?1/60:clamp(now-prev,0,.034);prev=now;if(!reduced.matches){if(mode==='free')freeStep(dt,now);else arrayStep(dt,now);}render(dt,now);mouse.vx*=Math.exp(-5*dt);mouse.vy*=Math.exp(-5*dt);requestAnimationFrame(frame);}
+resize();modifyPopulation();requestAnimationFrame(frame);
+})();
+</script>
+
+<script>
+(()=>{'use strict';
+const canvas=document.getElementById('labCanvas'), ctx=canvas.getContext('2d');
+const layer=document.getElementById('labLayer'), info=document.getElementById('labInfo'), labControls=document.getElementById('labControls'), labExplanation=document.querySelector('.lab-explanation'), thirdOverlay=document.getElementById('thirdOverlay');
+const labNA=document.getElementById('labNA'),labWL=document.getElementById('labWL'),labPower=document.getElementById('labPower'),labPosition=document.getElementById('labPosition');
+document.getElementById('labQuality').addEventListener('input',e=>{labValue.quality=Number(e.target.value)/100;});
+const couplingBar=document.getElementById('couplingBar'),couplingFill=document.getElementById('couplingFill');
+const labValue={na:.68,wl:455,power:.5,position:0,quality:.38};
+for(const [input,key,fmt,out] of [[labNA,'na',v=>v.toFixed(2),'naOut'],[labWL,'wl',v=>Math.round(v)+' nm','wlOut'],[labPower,'power',v=>Math.round(v*100)+'%','powerOut'],[labPosition,'position',v=>String(Math.round(v)),'positionOut']]){input.addEventListener('input',()=>{labValue[key]=key==='power'?Number(input.value)/100:Number(input.value);document.getElementById(out).textContent=fmt(labValue[key]);});}
+function beamColor(){const t=clamp((labValue.wl-430)/270);return {hue:225-225*t, color:`hsl(${225-225*t} 91% 75%)`};}
+function cavityEfficiency(){const displacement=labValue.position/100;return Math.exp(-.5*(displacement/.27)**2);}
+const hero=document.querySelector('.hero'), controls=document.querySelector('.controls'), note=document.querySelector('.note'), field=document.getElementById('scene');
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const smooth=(a,b,x)=>{const v=clamp((x-a)/(b-a));return v*v*(3-2*v)};
+let W=0,H=0,dpr=1,progress=0,lastTime=0,noiseX=0,noiseY=0,prevFrame=0;
+let trappedObject={state:'trapped',x:0,y:0,vx:0,vy:0,alpha:1,respawn:0};
+const stages=[...info.querySelectorAll('.reveal-section')];
+function fitInfo(){
+ info.style.transform='translateY(-50%) scale(1)';info.style.top='50%';info.style.bottom='auto';info.style.transformOrigin='left center';
+ const isNarrow=innerWidth<=800;
+ if(isNarrow){info.style.width='calc(100% - 40px)';}else{info.style.width='min(43vw, 570px)';}
+ const required=info.scrollHeight;const available=Math.max(100,innerHeight-(isNarrow?26:34));
+ const scale=Math.min(1,available/Math.max(1,required));
+ info.style.transform=`translateY(-50%) scale(${scale})`;
+ // Compensate the layout box for scale so left-column lines do not move off-screen.
+ if(isNarrow){info.style.top='50%';info.style.bottom='auto';info.style.width=`calc((100vw - 40px) / ${scale})`;}
+ // Align the explanation with the rendered Research interests heading and
+ // the same horizontal center used by the cavity illustration.
+ const heading=info.querySelector('.lab-title');
+ if(heading){
+  const bounds=heading.getBoundingClientRect();
+  const container=layer.getBoundingClientRect();
+  labExplanation.style.top=`${Math.max(12,bounds.top-container.top)}px`;
+ }
+ const cavityCenter=innerWidth*(isNarrow?.66:.735);
+ const explanationWidth=isNarrow?innerWidth*.55:Math.min(innerWidth*.43,590);
+ labExplanation.style.left=`${Math.max(explanationWidth/2+10,Math.min(innerWidth-explanationWidth/2-10,cavityCenter))}px`;
+}
+
+function resize(){W=innerWidth;H=innerHeight;dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);fitInfo()}
+function onScroll(){const max=document.getElementById('journey').offsetHeight-innerHeight;progress=clamp(scrollY/Math.max(1,max));const fade=1-smooth(.04,.37,progress);
+const secondIn=smooth(.15,.49,progress), thirdFade=smooth(.92,.975,progress), thirdIn=smooth(.945,.995,progress);
+hero.style.opacity=fade;controls.style.opacity=fade;controls.style.pointerEvents=fade<.15?'none':'auto';note.style.opacity=fade;field.style.opacity=1-smooth(.10,.46,progress);
+layer.style.opacity=secondIn;
+labExplanation.style.opacity=smooth(.35,.52,progress)*(1-thirdFade);
+labControls.style.opacity=smooth(.40,.52,progress)*(1-thirdFade);labControls.style.pointerEvents=(progress>.44&&thirdFade<.65)?'auto':'none';
+info.style.opacity=smooth(.35,.47,progress)*(1-thirdFade);
+thirdOverlay.style.opacity=thirdIn;
+ stages.forEach((el,i)=>{const amount=smooth(.41+i*.125,.52+i*.125,progress)*(1-thirdFade);el.style.opacity=amount;el.style.transform=`translateY(${(1-amount)*11}px)`;});
+ field.style.cursor=(progress>.31||document.documentElement.dataset.arrayMode!=='true')?'default':'crosshair';}
+function line(x1,y1,x2,y2,color,width=1){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()}
+function dot(x,y,r,color,alpha=1){ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.fill();ctx.globalAlpha=1}
+function gaussian(randX,randY){ // soft particle noise, refreshed continuously even when the cursor is stationary
+const u=Math.max(1e-5,Math.random()),v=Math.random(),r=Math.sqrt(-2*Math.log(u));return [r*Math.cos(2*Math.PI*v),r*Math.sin(2*Math.PI*v)];}
+function render(ms){const dt=clamp((ms-lastTime)/1000||.016,0,.045);lastTime=ms;
+ctx.clearRect(0,0,W,H);const p=progress,reveal=smooth(.15,.45,p), build=smooth(.30,.60,p),scatter=smooth(.43,1,p),mode=smooth(.53,1,p),thirdFade=smooth(.92,.975,p),keepOnlyObject=smooth(.945,.995,p);
+if(reveal>0){
+const compact=W<800;
+const sceneX=W*(compact?.66:.735),centerX=W*.5;
+const x=sceneX*(1-thirdFade)+centerX*thirdFade,cy=H*((compact?.28:.49)*(1-thirdFade)+.30*thirdFade);
+// Fixed longitudinal mode number: L = m*lambda/2 (relative units).
+// The separation follows wavelength, keeping the same longitudinal resonance index.
+// Keep both mirrors inside the viewport even at the longest wavelength and
+// at either extreme of the cavity-position slider.
+const referenceHalfL=0.95*Math.min(compact?W*.112:W*.090,compact?86:135); // initial mirror spacing: 95% of the previous reference
+const requestedHalfL=referenceHalfL*(labValue.wl/455);
+const edgeMargin=compact?18:32;
+const positionShiftFraction=.32;
+const maximumHalfL=Math.max(14,Math.min(x-edgeMargin-(compact?15:22),W-x-edgeMargin-(compact?15:22))/(1+positionShiftFraction));
+const halfL=Math.min(requestedHalfL,maximumHalfL);
+const shift=labValue.position/100*halfL*positionShiftFraction;
+const left=x-halfL+shift,right=x+halfL+shift;
+const mirrorH=Math.min(compact?105:190,H*(compact?.19:.31));
+// Visualization uses a Gaussian waist with adjustable NA in air:
+// tan(theta)=NA/sqrt(1-NA^2), zR=w0/tan(theta).
+const beamLength=Math.min(H*(compact?.46:.59),compact?265:440);
+const NA=labValue.na,theta=Math.asin(NA);
+const w0=compact?9:12, zR=w0/Math.tan(theta);
+
+// Bounded, low-frequency random motion: stronger cavity scattering produces smaller positional excursions.
+const efficiency=cavityEfficiency();const effectiveScatter=scatter*efficiency;
+const {hue,color:photonColor}=beamColor();const power=labValue.power;
+const cooling=clamp(Math.pow(effectiveScatter,.9)*Math.pow(power,.9)*2.4);
+const baseJitter=(compact?0.75:0.95);
+const noiseStrength=(baseJitter+11.5*Math.pow(1-cooling,2.6))/Math.sqrt(.75+labValue.na*1.45);
+couplingFill.style.width=(efficiency*100).toFixed(1)+"%";couplingBar.setAttribute("aria-valuenow",String(Math.round(efficiency*100)));document.getElementById("couplingOut").textContent=Math.round(efficiency*100)+"%";
+const coeff=Math.exp(-dt*6.0);
+const [g1,g2]=gaussian();noiseX=coeff*noiseX+Math.sqrt(1-coeff*coeff)*g1;noiseY=coeff*noiseY+Math.sqrt(1-coeff*coeff)*g2;
+const trappedX=x+clamp(noiseX,-2.2,2.2)*noiseStrength, trappedY=cy+clamp(noiseY,-2.2,2.2)*noiseStrength;
+const powerThreshold=0.05;
+const naReleaseThreshold=0.34;
+const naRecaptureThreshold=0.40;
+const lowPower=power<powerThreshold;
+const lowNA=labValue.na<naReleaseThreshold;
+const canRecapture=!lowPower && labValue.na>naRecaptureThreshold;
+if(lowPower || lowNA){
+ if(trappedObject.state==='trapped'){
+  trappedObject.state=lowNA?'released-down':'released';
+  trappedObject.x=trappedX; trappedObject.y=trappedY;
+  trappedObject.vx=(Math.random()-.5)*(compact?42:58);
+  trappedObject.vy=lowNA?(compact?42:62):(Math.random()-.5)*(compact?38:52);
+  trappedObject.alpha=Math.max(.9,trappedObject.alpha||1);
+ }
+}else if(canRecapture){
+ if(trappedObject.state==='gone' || trappedObject.state==='released' || trappedObject.state==='released-down'){
+  if(trappedObject.state==='gone' || trappedObject.alpha<=0.02){
+   trappedObject.state='trapped';
+   trappedObject.alpha=0;
+   trappedObject.x=trappedX; trappedObject.y=trappedY;
+   trappedObject.vx=0; trappedObject.vy=0;
+   noiseX=0; noiseY=0;
+  }
+ }
+}
+if(trappedObject.state==='trapped'){
+ trappedObject.x=trappedX; trappedObject.y=trappedY;
+ trappedObject.alpha=Math.min(1,trappedObject.alpha+dt*2.8);
+}else if(trappedObject.state==='released' || trappedObject.state==='released-down'){
+ const [rg1,rg2]=gaussian();
+ const downwardBias=trappedObject.state==='released-down' ? (compact?26:34) : 0;
+ const lateralKick=trappedObject.state==='released-down' ? (compact?10:14) : (compact?16:22);
+ trappedObject.vx=(trappedObject.vx||0)*0.985 + rg1*lateralKick*dt*60;
+ trappedObject.vy=(trappedObject.vy||0)*0.985 + (rg2*(compact?9:12)+downwardBias)*dt*60;
+ trappedObject.x+=trappedObject.vx*dt;
+ trappedObject.y+=trappedObject.vy*dt;
+ trappedObject.alpha=Math.max(0,trappedObject.alpha-dt*(trappedObject.state==='released-down'?0.72:0.58));
+ if(trappedObject.alpha<=0.01 || trappedObject.y>H+28)trappedObject.state='gone';
+}
+const px=trappedObject.x, py=trappedObject.y, objectAlpha=trappedObject.state==='gone'?0:trappedObject.alpha;
+const t=ms*.001;
+ctx.save();ctx.globalAlpha=reveal*(1-.88*keepOnlyObject);
+// Smooth Gaussian beam: continuous hyperbolic waist, no polygonal cone edges.
+// The cross-sectional profile is I(r,z) proportional to (w0/w)^2 exp(-2r^2/w^2).
+// Draw a softly clipped Gaussian intensity, not separate bright trapezoids.
+const segments=150, rows=compact?52:76;
+for(let i=0;i<segments;i++){
+ const z=(i+.5)/segments*beamLength-beamLength*.5;
+ const width=w0*Math.sqrt(1+(z/zR)**2);
+ const u=Math.abs(z)/(beamLength*.5);
+ const axial=Math.pow(Math.max(0,1-u*u),1.45);
+ const localAmp=(.62+.38*w0/width)*axial*(.34+1.55*power);
+ const dz=beamLength/segments;
+ for(let k=-rows;k<=rows;k++){
+  const r=k/rows*width*2.7;
+  const profile=Math.exp(-2*(r/width)**2);
+  const brightness=localAmp*profile;
+  if(brightness<.003)continue;
+  ctx.fillStyle=`hsla(${hue},91%,63%,${Math.min(.39,brightness*.33)})`;
+  ctx.fillRect(x+r-width*2.7/rows*.53,cy+z-dz*.54,width*2.7/rows*1.1,dz*1.1);
+ }
+}
+// Small moving photons follow the focused beam rather than the full page.
+ctx.globalAlpha=reveal;
+const photonCount=Math.round(28+power*190);
+for(let j=0;j<photonCount;j++){
+ const u=((j/photonCount+t*(.14+.028*(j%5)))%1)*2-1;
+ const z=u*beamLength*.5,w=w0*Math.sqrt(1+(z/zR)**2);
+ const edge=Math.pow(Math.max(0,1-Math.abs(u)),.36);
+ dot(x+Math.sin(j*13.73+t*.7)*w*.52,cy+z,compact?1.05:1.45,photonColor,edge*(.34+.88*power)*(.68+.26*Math.sin(j*3+t)));
+}
+// Two plano-concave cavity mirrors: flat outside backs and visibly concave inside faces.
+ctx.save();ctx.globalAlpha=build*reveal*(1-thirdFade);
+for(const side of [-1,1]){
+ const mx=side<0?left:right;
+ const bow=Math.min(compact?13:26,mirrorH*.17);
+ const back=mx+side*(compact?22:34);
+ const top=cy-mirrorH*.5,bot=cy+mirrorH*.5;
+ // The flat exterior face and top/bottom edge make the mirror a solid optical element.
+ ctx.beginPath();ctx.moveTo(mx,top);ctx.lineTo(back,top);ctx.lineTo(back,bot);
+ ctx.lineTo(mx,bot);ctx.quadraticCurveTo(mx+side*bow,cy,mx,top);ctx.closePath();
+ const metal=ctx.createLinearGradient(mx-16,cy,mx+16,cy);
+ metal.addColorStop(0,'rgba(78,109,139,.82)');metal.addColorStop(.5,'rgba(215,231,245,.92)');metal.addColorStop(1,'rgba(75,102,132,.78)');
+ ctx.fillStyle=metal;ctx.fill();ctx.strokeStyle='rgba(166,203,228,.74)';ctx.lineWidth=1.2;ctx.stroke();
+ // Curved inner surface, bulging toward the mirror substrate at its vertex.
+ ctx.beginPath();ctx.moveTo(mx,top);ctx.quadraticCurveTo(mx+side*bow,cy,mx,bot);
+ ctx.shadowColor='rgba(151,214,253,.72)';ctx.shadowBlur=13;ctx.strokeStyle='rgba(239,247,252,.99)';ctx.lineWidth=4.2;ctx.stroke();ctx.shadowBlur=0;
+ ctx.beginPath();ctx.moveTo(back,top);ctx.lineTo(back,bot);ctx.strokeStyle='rgba(232,241,249,.77)';ctx.lineWidth=1.8;ctx.stroke();
+ // Coating hatching on the outside edge.
+ for(let k=0;k<4;k++){const yy=top+(k+1)*mirrorH/5;line(back-side*2,yy,back+side*2,yy,'rgba(228,240,249,.34)',1)}
+}
+ctx.restore();
+// Scattering photons radiate from the moving object and are collected by the mirrors.
+// Use multiple finer ribbon-like paths on each side, each with fewer photons.
+const injection=effectiveScatter*reveal*(0.15+1.25*power)*objectAlpha*smooth(naReleaseThreshold,naRecaptureThreshold,labValue.na)*(1-thirdFade);
+ctx.save();
+for(const side of [-1,1]){
+ const mirrorX=side<0?left:right;
+ const ribbonOffsets=[-0.12,0,0.12];
+ const photonsPerRibbon=Math.round(4+power*12);
+ for(let r=0;r<ribbonOffsets.length;r++){
+  const ribbonShift=ribbonOffsets[r]*mirrorH;
+  for(let j=0;j<photonsPerRibbon;j++){
+   const phase=(j/photonsPerRibbon+t*(.16+.018*(j%4))+r*.21)%1;
+   const spread=ribbonShift+Math.sin((j+r*11)*2.07)*mirrorH*.030;
+   const tx=mirrorX,ty=cy+spread;
+   const u=phase,arc=Math.sin(Math.PI*u);
+   const bend=(side*(compact?3.1:4.8)+Math.sin(j*1.5+t*.9+r)* (compact?.75:1.2))*arc*(1-u*.15);
+   const xx=px+(tx-px)*u;
+   const yy=py+(ty-py)*u+bend*arc;
+   dot(xx,yy,compact?1.0:1.25,photonColor,injection*(.18+.62*arc));
+  }
+ }
+ // A narrow collection fan ties the finer ribbons together.
+ const cone=ctx.createRadialGradient(px,py,0,px,py,Math.abs(mirrorX-px));
+ cone.addColorStop(0,`hsla(${hue},92%,74%,${injection*.10})`);
+ cone.addColorStop(.42,`hsla(${hue},92%,68%,${injection*.035})`);
+ cone.addColorStop(1,`hsla(${hue},92%,62%,0)`);
+ ctx.beginPath();
+ ctx.moveTo(px,py);
+ ctx.quadraticCurveTo(px+side*(compact?36:58),cy-mirrorH*.10,mirrorX,cy-mirrorH*.12);
+ ctx.lineTo(mirrorX,cy+mirrorH*.12);
+ ctx.quadraticCurveTo(px+side*(compact?36:58),cy+mirrorH*.10,px,py);
+ ctx.closePath();
+ ctx.fillStyle=cone;ctx.fill();
+}
+ctx.restore();
+// Resonantly enhanced, same-hue intracavity standing-wave mode. Its brightness
+// depends on power and coupling; tonal differences separate it from the tweezer.
+const qResponse=.12+1.13*Math.pow(labValue.quality,1.55);
+const naSupport=smooth(naReleaseThreshold,naRecaptureThreshold,labValue.na);
+const cavityIntensity=mode*reveal*efficiency*qResponse*(0.05+1.40*Math.pow(power,1.18))*Math.max(0,objectAlpha)*naSupport*(1-thirdFade);
+ctx.save();ctx.globalAlpha=1-thirdFade;
+const n=compact?3:4,range=right-left,steps=170;
+for(let k=0;k<steps;k++){
+ const u=(k+.5)/steps,xx=left+u*range;
+ const antinode=Math.pow(Math.sin(n*Math.PI*u),2);
+ const taper=Math.pow(Math.sin(Math.PI*u),.38);
+ const height=(compact?24:39)*Math.pow(antinode,.65)*taper;
+ const alpha=Math.min(.96,(.19+.82*antinode*taper)*cavityIntensity*1.95);
+ const grad=ctx.createRadialGradient(xx,cy,0,xx,cy,Math.max(2,height));
+ grad.addColorStop(0,`hsla(${hue},96%,88%,${alpha})`);
+ grad.addColorStop(.34,`hsla(${hue},94%,72%,${alpha*.86})`);
+ grad.addColorStop(1,`hsla(${hue},90%,50%,0)`);
+ ctx.fillStyle=grad;ctx.fillRect(xx-range/steps*.75,cy-height,range/steps*1.6,height*2);
+}
+// Individual photons circulate inside a transverse cavity-mode envelope,
+// rather than tracing two perfectly straight horizontal segments.
+for(const side of [-1,1])for(let j=0;j<28;j++){
+ const u=((j+.37)/28+side*t*(.11+.14*scatter)+2)%1;
+ const antinode=Math.pow(Math.sin(n*Math.PI*u),2);
+ const taper=Math.pow(Math.sin(Math.PI*u),.38);
+ const envelopeHeight=(compact?24:39)*Math.pow(antinode,.65)*taper;
+ const radius=compact?1.1:1.45;
+ // Each photon, including its drawn radius, stays within the visible
+ // standing-wave envelope. Skip nodes where no photon can fit.
+ const availableHeight=envelopeHeight-radius-0.7;
+ if(availableHeight<=0.5)continue;
+ const transverse=Math.sin(j*2.27+t*.53)*availableHeight*.052; // 20% of the original 0.26 transverse oscillation
+ dot(left+u*range,cy+transverse,radius,photonColor,
+     Math.min(1,cavityIntensity*(.25+.95*antinode*taper)));
+}
+// A small fraction of the cavity field is transmitted through the left mirror.
+// The outgoing photons propagate left and gradually fade into the background.
+// They remain deliberately sparse so text on the left stays legible.
+const leakageQ=Math.pow(Math.max(.035,1-0.94*labValue.quality),1.15);
+const leakage=clamp(mode*reveal*efficiency*power*(.55+1.15*Math.sqrt(Math.max(0,cavityIntensity)))*leakageQ*(1-thirdFade),0,.72);
+if(leakage>.002){
+ const outputX=left-(compact?27:39); // emerging just beyond the exterior face of the left mirror
+ const travel=Math.min(compact?W*.28:W*.37,Math.max(45,outputX-(compact?8:12)));
+ const count=Math.round(18+120*leakage); // visibly more transmitted photons
+ for(let j=0;j<count;j++){
+  const u=((j+.5)/count+t*(.18+.022*(j%5)))%1;
+  const startSpread=(Math.sin(j*12.9898+1.7)*0.5)*mirrorH*.50; // random-like start within central ±25% of mirror height
+  const xx=outputX-u*travel;
+  const yy=cy+startSpread+Math.sin(j*2.11+t*.51)*(compact?1.1:1.7)*(1-u);
+  const fade=Math.pow(1-u,.58);
+  const brushRadius=(compact?1.7:2.15)*(1-.62*u);
+  dot(xx,yy,brushRadius,photonColor,Math.min(.96,leakage*1.95*fade*(.72+.28*Math.sin(Math.PI*u))));
+ }
+}
+ctx.restore();
+// Trapped particle is larger and makes two-dimensional position excursions.
+const rad=compact?9:11;
+if(objectAlpha>0.001){
+ const halo=ctx.createRadialGradient(px,py,0,px,py,rad*3.5);
+ halo.addColorStop(0,`rgba(182,230,255,${0.25*objectAlpha})`);halo.addColorStop(1,'rgba(126,204,248,0)');
+ ctx.fillStyle=halo;ctx.beginPath();ctx.arc(px,py,rad*3.5,0,2*Math.PI);ctx.fill();
+ ctx.globalAlpha*=objectAlpha;
+ ctx.strokeStyle='#c6edff';ctx.lineWidth=1.65;ctx.fillStyle='rgba(157,217,249,.21)';ctx.beginPath();ctx.arc(px,py,rad,0,2*Math.PI);ctx.fill();ctx.stroke();dot(px,py,2.3,'#e8f8ff',.95);
+ ctx.globalAlpha=reveal;
+}
+ctx.restore();
+}
+requestAnimationFrame(render)}
+addEventListener('resize',()=>{resize();onScroll()},{passive:true});addEventListener('scroll',onScroll,{passive:true});
+resize();onScroll();requestAnimationFrame(render);
+})();
+</script>
+</body></html>
